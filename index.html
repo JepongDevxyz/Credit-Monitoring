@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cloud Utang Tracker</title>
+    <title>Credit Monitoring</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Firebase SDKs -->
@@ -50,14 +50,14 @@
             position: relative;
         }
 
-        .auth-header { text-align: center; margin-bottom: 1.8rem; }
-        .auth-header h2 { font-size: 1.5rem; color: var(--text-main); font-weight: 700; margin-bottom: 0.3rem; }
-        .auth-header p { font-size: 0.85rem; color: var(--text-muted); }
+        .auth-header { text-align: center; margin-bottom: 1.2rem; }
+        .auth-header h2 { font-size: 1.4rem; color: var(--text-main); font-weight: 700; margin-bottom: 0.3rem; }
+        .auth-header p { font-size: 0.8rem; color: var(--text-muted); }
 
         .hidden { display: none !important; }
 
-        .form-group { margin-bottom: 1.2rem; }
-        label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.5px; }
 
         input {
             width: 100%;
@@ -78,19 +78,55 @@
 
         .btn {
             width: 100%;
-            padding: 0.9rem;
+            padding: 0.85rem;
             background: var(--accent);
             color: #090d16;
             font-weight: 700;
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            margin-top: 0.5rem;
+            margin-top: 0.4rem;
             transition: all 0.2s ease;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .btn:hover { background: var(--accent-hover); color: #fff; transform: translateY(-1px); }
+
+        /* GOOGLE SIGN IN BUTTON STYLING */
+        .btn-google {
+            background: #ffffff;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+        }
+        .btn-google:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        .btn-google svg { width: 18px; height: 18px; }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 1.2rem 0;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border);
+        }
+        .divider span { padding: 0 10px; text-transform: uppercase; letter-spacing: 0.5px; }
 
         .btn-pay-now {
             background: linear-gradient(135deg, #007dfe 0%, #0056b3 100%);
@@ -143,12 +179,12 @@
         .toggle-text span { color: var(--accent); font-weight: 600; }
         .toggle-text span:hover { text-decoration: underline; }
 
-        /* MODAL STYLING FOR UNIVERSAL PAYMENT */
+        /* MODAL STYLING FOR PAYMENT */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(6px);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -159,33 +195,67 @@
         .modal-content {
             background: #1e293b;
             border: 1px solid var(--border);
-            padding: 1.8rem;
-            border-radius: 16px;
+            padding: 1.5rem;
+            border-radius: 18px;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .payment-box {
-            background: rgba(0, 125, 254, 0.1);
+            background: rgba(15, 23, 42, 0.6);
             border: 1px solid rgba(0, 125, 254, 0.3);
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 1rem;
             text-align: center;
-            margin-bottom: 1.2rem;
+            margin-bottom: 1rem;
         }
 
-        .payment-box h3 { color: #38bdf8; font-size: 0.85rem; margin-bottom: 0.4rem; text-transform: uppercase; }
-        .payment-box .number { font-size: 1.3rem; font-weight: 700; color: #fff; letter-spacing: 1px; }
+        .payment-box h3 { color: #38bdf8; font-size: 0.75rem; margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .payment-box .number { font-size: 1.2rem; font-weight: 700; color: #fff; letter-spacing: 1px; }
         .payment-box .name { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
-        .payment-box .methods { font-size: 0.75rem; color: #f59e0b; font-weight: 600; margin-top: 0.4rem; }
+        .payment-box .methods { font-size: 0.7rem; color: #f59e0b; font-weight: 600; margin-top: 0.4rem; }
+
+        /* GRID LAYOUT FOR ALL PAYMENT APPS */
+        .app-links-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .btn-app {
+            color: #fff;
+            font-size: 0.78rem;
+            padding: 0.65rem 0.4rem;
+            margin-top: 0;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .btn-gcash { background: #007dfe; }
+        .btn-gcash:hover { background: #0056b3; }
+
+        .btn-maya { background: #10b981; }
+        .btn-maya:hover { background: #059669; }
+
+        .btn-gotyme { background: #6366f1; }
+        .btn-gotyme:hover { background: #4f46e5; }
+
+        .btn-maribank { background: #ef4444; }
+        .btn-maribank:hover { background: #dc2626; }
+
+        .btn-atome { background: #ec4899; grid-column: span 2; }
+        .btn-atome:hover { background: #db2777; }
 
         .btn-cancel {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
             color: var(--text-main);
-            margin-top: 0.5rem;
+            margin-top: 0.4rem;
         }
-        .btn-cancel:hover { background: rgba(255, 255, 255, 0.2); }
+        .btn-cancel:hover { background: rgba(255, 255, 255, 0.15); }
 
         #toast {
             position: fixed;
@@ -219,9 +289,21 @@
     <!-- LOGIN / REGISTER SCREEN -->
     <div class="container" id="authBox">
         <div class="auth-header">
-            <h2 id="authTitle">📑 Utang Tracker Login</h2>
-            <p id="authSubTitle">Mag-login para ma-access ang iyong utang records</p>
+            <h2 id="authTitle">Credit Monitoring</h2>
+            <p id="authSubTitle">Mag-login para ma-access ang records</p>
         </div>
+
+        <button class="btn btn-google" onclick="handleGoogleAuth()">
+            <svg viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            Continue with Google
+        </button>
+
+        <div class="divider"><span>O MANUAL TYPING</span></div>
         
         <div class="form-group">
             <label>Email Address</label>
@@ -257,22 +339,33 @@
         <ul class="history-list" id="historyList"></ul>
     </div>
 
-    <!-- PAYMENT MODAL (Universal Options) -->
+    <!-- PAYMENT MODAL -->
     <div class="modal-overlay hidden" id="payModal">
         <div class="modal-content">
-            <div class="auth-header" style="margin-bottom: 1rem;">
+            <div class="auth-header">
                 <h2>Magbayad ng Utang</h2>
-                <p>I-send ang bayad sa alinmang payment channel sa ibaba:</p>
+                <p>I-scan ang QR Code o pumili ng app sa ibaba:</p>
             </div>
 
             <div class="payment-box">
                 <h3>PAYMENT DETAILS</h3>
-                <!-- KUNG MAY QRPH IMAGE KA, PWEDE MO I-UNCOMMENT ANG LINYA SA IBABA: -->
+                
+                <!-- PALITAN ANG SRC NG DIRECT LINK NG QRPH CODE MO -->
                 <img src="https://i.postimg.cc/BvLpwdpb/Screenshot-20260816-165153-com-facebook-orca-Main-Activity.jpg" style="width:100%; max-width:180px; margin: 0.5rem 0; border-radius:8px;">
                 
                 <div class="number">0993 027 0853</div>
-                <div class="name">Account Name: J***A *E* A.</div>
+                <div class="name">Account Name: JA**A M** A.</div>
                 <div class="methods">Accepted: GCash / Maya / GoTyme / MariBank / Atome / QRPH</div>
+            </div>
+
+            <!-- DIRECT APP BUTTONS FOR ALL 5 PAYMENT METHODS -->
+            <label style="margin-bottom: 0.5rem;">Buksan ang Payment App:</label>
+            <div class="app-links-grid">
+                <a href="gcash://" class="btn btn-app btn-gcash">🔵 Open GCash</a>
+                <a href="paymaya://" class="btn btn-app btn-maya">🟢 Open Maya</a>
+                <a href="gotyme://" class="btn btn-app btn-gotyme">🟣 Open GoTyme</a>
+                <a href="maribank://" class="btn btn-app btn-maribank">🔴 Open MariBank</a>
+                <a href="atome://" class="btn btn-app btn-atome">💗 Open Atome</a>
             </div>
 
             <div class="form-group">
@@ -282,7 +375,7 @@
 
             <div class="form-group">
                 <label>Reference No. / Transaction ID</label>
-                <input type="text" id="payRefNo" placeholder="e.g. 10023456789 o Ref No.">
+                <input type="text" id="payRefNo" placeholder="e.g. 10023456789">
             </div>
 
             <button class="btn" style="background: var(--success); color:#fff;" onclick="submitPayment()">I-submit ang Bayad</button>
@@ -321,7 +414,10 @@
                 currentUser = user;
                 document.getElementById('authBox').classList.add('hidden');
                 document.getElementById('appBox').classList.remove('hidden');
-                document.getElementById('userDisplay').innerText = `UTANG NI ${user.email.split('@')[0].toUpperCase()}`;
+                
+                const nameDisplay = user.displayName || user.email.split('@')[0];
+                document.getElementById('userDisplay').innerText = `UTANG NI ${nameDisplay.toUpperCase()}`;
+                
                 loadCloudData();
             } else {
                 currentUser = null;
@@ -335,10 +431,10 @@
             document.getElementById('authEmail').value = '';
             document.getElementById('authPassword').value = '';
 
-            document.getElementById('authTitle').innerText = isRegisterMode ? '📝 Create Account' : '📑 Utang Tracker Login';
+            document.getElementById('authTitle').innerText = isRegisterMode ? 'Create Account' : 'Credit Monitoring';
             document.getElementById('authSubTitle').innerText = isRegisterMode 
-                ? 'Gumawa ng bagong account para magsimula' 
-                : 'Mag-login para ma-access ang iyong utang records';
+                ? 'Gumawa ng bagong account' 
+                : 'Mag-login para ma-access ang records';
             document.getElementById('authBtn').innerText = isRegisterMode ? 'Register' : 'Login';
             document.getElementById('toggleAuth').innerHTML = isRegisterMode 
                 ? 'May account ka na? <span>Mag-Login</span>' 
@@ -354,7 +450,7 @@
             try {
                 if (isRegisterMode) {
                     const res = await auth.createUserWithEmailAndPassword(email, password);
-                    await db.collection('users').doc(res.user.uid).set({ balance: 0, transactions: [] });
+                    await initializeUserData(res.user.uid);
                     showNotification('🎉 Account created successfully!', 'success');
                 } else {
                     await auth.signInWithEmailAndPassword(email, password);
@@ -362,6 +458,26 @@
                 }
             } catch (err) {
                 showNotification(err.message, 'error');
+            }
+        }
+
+        /* GOOGLE SIGN IN FUNCTION */
+        async function handleGoogleAuth() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                const res = await auth.signInWithPopup(provider);
+                await initializeUserData(res.user.uid);
+                showNotification('🎉 Google Login Successful!', 'success');
+            } catch (err) {
+                showNotification(err.message, 'error');
+            }
+        }
+
+        async function initializeUserData(uid) {
+            const docRef = db.collection('users').doc(uid);
+            const doc = await docRef.get();
+            if (!doc.exists) {
+                await docRef.set({ balance: 0, transactions: [] });
             }
         }
 
@@ -396,7 +512,6 @@
             });
         }
 
-        // MODAL FUNCTIONS
         function openPaymentModal() {
             document.getElementById('payAmount').value = '';
             document.getElementById('payRefNo').value = '';
@@ -407,7 +522,6 @@
             document.getElementById('payModal').classList.add('hidden');
         }
 
-        // SUBMIT PAYMENT LOGIC FOR ANY E-WALLET/BANK
         async function submitPayment() {
             const amount = parseFloat(document.getElementById('payAmount').value);
             const refNo = document.getElementById('payRefNo').value.trim();
