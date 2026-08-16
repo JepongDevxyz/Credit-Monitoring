@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Utang Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        :root {
+            --bg: #090d16;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --accent: #f59e0b; 
+            --accent-hover: #d97706;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.15) 0%, transparent 50%);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1.5rem 1rem;
+        }
+
+        .container {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            padding: 2.2rem 2rem;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .auth-header { text-align: center; margin-bottom: 1.8rem; }
+        .auth-header h2 { font-size: 1.5rem; color: var(--text-main); font-weight: 700; margin-bottom: 0.3rem; }
+        .auth-header p { font-size: 0.85rem; color: var(--text-muted); }
+
+        .hidden { display: none !important; }
+
+        .form-group { margin-bottom: 1.2rem; }
+        label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        input {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.9rem;
+            background: var(--accent);
+            color: #090d16;
+            font-weight: 700;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+        }
+
+        .btn:hover { background: var(--accent-hover); color: #fff; transform: translateY(-1px); }
+
+        .btn-pay-now {
+            background: linear-gradient(135deg, #007dfe 0%, #0056b3 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 125, 254, 0.3);
+            margin-bottom: 1rem;
+        }
+
+        .btn-pay-now:hover {
+            background: linear-gradient(135deg, #0056b3 0%, #003d80 100%);
+            color: #fff;
+        }
+
+        .card-display {
+            background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
+            padding: 1.5rem;
+            border-radius: 14px;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 10px 20px rgba(217, 119, 6, 0.25);
+        }
+
+        .card-header { display: flex; justify-content: space-between; align-items: center; }
+        .card-display label { font-size: 0.75rem; text-transform: uppercase; opacity: 0.9; color: #fff; font-weight: 600; }
+        .card-display .balance { font-size: 2.2rem; font-weight: 700; margin-top: 0.3rem; color: #fff; }
+
+        .history-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.8rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1rem;
+            color: var(--text-muted);
+        }
+
+        .history-list { list-style: none; max-height: 220px; overflow-y: auto; }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            font-size: 0.88rem;
+            border: 1px solid var(--border);
+        }
+        .history-item.utang .amount { color: var(--danger); font-weight: 700; }
+        .history-item.bayad .amount { color: var(--success); font-weight: 700; }
+
+        .toggle-text { font-size: 0.85rem; text-align: center; color: var(--text-muted); margin-top: 1.2rem; cursor: pointer; }
+        .toggle-text span { color: var(--accent); font-weight: 600; }
+        .toggle-text span:hover { text-decoration: underline; }
+
+        /* MODAL STYLING FOR UNIVERSAL PAYMENT */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(6px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid var(--border);
+            padding: 1.8rem;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .payment-box {
+            background: rgba(0, 125, 254, 0.1);
+            border: 1px solid rgba(0, 125, 254, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .payment-box h3 { color: #38bdf8; font-size: 0.85rem; margin-bottom: 0.4rem; text-transform: uppercase; }
+        .payment-box .number { font-size: 1.3rem; font-weight: 700; color: #fff; letter-spacing: 1px; }
+        .payment-box .name { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
+        .payment-box .methods { font-size: 0.75rem; color: #f59e0b; font-weight: 600; margin-top: 0.4rem; }
+
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            margin-top: 0.5rem;
+        }
+        .btn-cancel:hover { background: rgba(255, 255, 255, 0.2); }
+
+        #toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: #1e293b;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        #toast.success { border-left: 4px solid var(--success); }
+        #toast.error { border-left: 4px solid var(--danger); }
+    </style>
+</head>
+<body>
+
+    <div id="toast"></div>
+
+    <!-- LOGIN / REGISTER SCREEN -->
+    <div class="container" id="authBox">
+        <div class="auth-header">
+            <h2 id="authTitle">📑 Utang Tracker Login</h2>
+            <p id="authSubTitle">Mag-login para ma-access ang iyong utang records</p>
+        </div>
+        
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="authEmail" placeholder="juan@gmail.com" autocomplete="off">
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="authPassword" placeholder="••••••••">
+        </div>
+
+        <button class="btn" id="authBtn" onclick="handleAuth()">Login</button>
+        
+        <p class="toggle-text" id="toggleAuth" onclick="toggleAuthMode()">
+            Wala pang account? <span>Mag-Register</span>
+        </p>
+    </div>
+
+    <!-- MAIN DASHBOARD SCREEN -->
+    <div class="container hidden" id="appBox">
+        <div class="card-display">
+            <div class="card-header">
+                <label id="userDisplay">Total Utang</label>
+            </div>
+            <div class="balance" id="displayBalance">₱0.00</div>
+        </div>
+
+        <!-- PAY NOW BUTTON -->
+        <button class="btn btn-pay-now" onclick="openPaymentModal()">💳 Pay Now</button>
+
+        <!-- TRANSACTION HISTORY SECTION -->
+        <div class="history-title">Transaction History</div>
+        <ul class="history-list" id="historyList"></ul>
+    </div>
+
+    <!-- PAYMENT MODAL (Universal Options) -->
+    <div class="modal-overlay hidden" id="payModal">
+        <div class="modal-content">
+            <div class="auth-header" style="margin-bottom: 1rem;">
+                <h2>Magbayad ng Utang</h2>
+                <p>I-send ang bayad sa alinmang payment channel sa ibaba:</p>
+            </div>
+
+            <div class="payment-box">
+                <h3>PAYMENT DETAILS</h3>
+                <!-- KUNG MAY QRPH IMAGE KA, PWEDE MO I-UNCOMMENT ANG LINYA SA IBABA: -->
+                <img src="https://i.postimg.cc/BvLpwdpb/Screenshot-20260816-165153-com-facebook-orca-Main-Activity.jpg" style="width:100%; max-width:180px; margin: 0.5rem 0; border-radius:8px;">
+                
+                <div class="number">0993 027 0853</div>
+                <div class="name">Account Name: J***A *E* A.</div>
+                <div class="methods">Accepted: GCash / Maya / GoTyme / MariBank / Atome / QRPH</div>
+            </div>
+
+            <div class="form-group">
+                <label>Halaga ng Ibinayad (₱)</label>
+                <input type="number" id="payAmount" placeholder="e.g. 500">
+            </div>
+
+            <div class="form-group">
+                <label>Reference No. / Transaction ID</label>
+                <input type="text" id="payRefNo" placeholder="e.g. 10023456789 o Ref No.">
+            </div>
+
+            <button class="btn" style="background: var(--success); color:#fff;" onclick="submitPayment()">I-submit ang Bayad</button>
+            <button class="btn btn-cancel" onclick="closePaymentModal()">I-cancel</button>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyB1pEQ5jDd-04D6EH-cvXNJmnSZt-pZRG4",
+            authDomain: "monitoring-credit-card.firebaseapp.com",
+            projectId: "monitoring-credit-card",
+            storageBucket: "monitoring-credit-card.firebasestorage.app",
+            messagingSenderId: "5413975649",
+            appId: "1:5413975649:web:58dfc5fabcd9c470d1dc20",
+            measurementId: "G-6VPSE0ZKE1"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentUser = null;
+        let isRegisterMode = false;
+        let currentBalance = 0;
+
+        function showNotification(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.className = `show ${type}`;
+            setTimeout(() => { toast.className = ''; }, 3000);
+        }
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('authBox').classList.add('hidden');
+                document.getElementById('appBox').classList.remove('hidden');
+                document.getElementById('userDisplay').innerText = `UTANG NI ${user.email.split('@')[0].toUpperCase()}`;
+                loadCloudData();
+            } else {
+                currentUser = null;
+                document.getElementById('authBox').classList.remove('hidden');
+                document.getElementById('appBox').classList.add('hidden');
+            }
+        });
+
+        function toggleAuthMode() {
+            isRegisterMode = !isRegisterMode;
+            document.getElementById('authEmail').value = '';
+            document.getElementById('authPassword').value = '';
+
+            document.getElementById('authTitle').innerText = isRegisterMode ? '📝 Create Account' : '📑 Utang Tracker Login';
+            document.getElementById('authSubTitle').innerText = isRegisterMode 
+                ? 'Gumawa ng bagong account para magsimula' 
+                : 'Mag-login para ma-access ang iyong utang records';
+            document.getElementById('authBtn').innerText = isRegisterMode ? 'Register' : 'Login';
+            document.getElementById('toggleAuth').innerHTML = isRegisterMode 
+                ? 'May account ka na? <span>Mag-Login</span>' 
+                : 'Wala pang account? <span>Mag-Register</span>';
+        }
+
+        async function handleAuth() {
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value.trim();
+
+            if (!email || !password) return showNotification('Paki-sagutan ang Email at Password.', 'error');
+
+            try {
+                if (isRegisterMode) {
+                    const res = await auth.createUserWithEmailAndPassword(email, password);
+                    await db.collection('users').doc(res.user.uid).set({ balance: 0, transactions: [] });
+                    showNotification('🎉 Account created successfully!', 'success');
+                } else {
+                    await auth.signInWithEmailAndPassword(email, password);
+                    showNotification('✨ Logged in successfully!', 'success');
+                }
+            } catch (err) {
+                showNotification(err.message, 'error');
+            }
+        }
+
+        function loadCloudData() {
+            db.collection('users').doc(currentUser.uid).onSnapshot(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    currentBalance = data.balance || 0;
+                    const transactions = data.transactions || [];
+
+                    document.getElementById('displayBalance').innerText = '₱' + currentBalance.toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+                    const historyList = document.getElementById('historyList');
+                    historyList.innerHTML = '';
+
+                    if (transactions.length === 0) {
+                        historyList.innerHTML = '<li style="text-align:center; color: var(--text-muted); font-size:0.8rem; padding: 0.5rem;">Walang utang history.</li>';
+                        return;
+                    }
+
+                    transactions.slice().reverse().forEach(tx => {
+                        const li = document.createElement('li');
+                        li.className = `history-item ${tx.type}`;
+                        const sign = tx.type === 'utang' ? '+' : '-';
+                        li.innerHTML = `
+                            <span>${tx.desc}</span>
+                            <span class="amount">${sign}₱${tx.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                        `;
+                        historyList.appendChild(li);
+                    });
+                }
+            });
+        }
+
+        // MODAL FUNCTIONS
+        function openPaymentModal() {
+            document.getElementById('payAmount').value = '';
+            document.getElementById('payRefNo').value = '';
+            document.getElementById('payModal').classList.remove('hidden');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('payModal').classList.add('hidden');
+        }
+
+        // SUBMIT PAYMENT LOGIC FOR ANY E-WALLET/BANK
+        async function submitPayment() {
+            const amount = parseFloat(document.getElementById('payAmount').value);
+            const refNo = document.getElementById('payRefNo').value.trim();
+
+            if (isNaN(amount) || amount <= 0) return showNotification('Maglagay ng tamang halaga.', 'error');
+            if (!refNo) return showNotification('Paki-lagay ang Reference Number / Ref No.', 'error');
+
+            if (amount > currentBalance) {
+                return showNotification('Sobra ang ibinabayad kaysa sa kabuuang utang.', 'error');
+            }
+
+            try {
+                const newBalance = currentBalance - amount;
+                const docRef = db.collection('users').doc(currentUser.uid);
+
+                await docRef.set({
+                    balance: newBalance,
+                    transactions: firebase.firestore.FieldValue.arrayUnion({
+                        desc: `Online Pay (Ref: ${refNo})`,
+                        amount: amount,
+                        type: 'bayad'
+                    })
+                }, { merge: true });
+
+                closePaymentModal();
+                showNotification('🎉 Na-record na ang bayad mo!', 'success');
+            } catch (err) {
+                showNotification(err.message, 'error');
+            }
+        }
+    </script>
+</body>
+</html>
