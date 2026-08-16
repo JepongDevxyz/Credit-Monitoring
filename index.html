@@ -95,7 +95,6 @@
 
         .btn:hover { background: var(--accent-hover); color: #fff; transform: translateY(-1px); }
 
-        /* GOOGLE SIGN IN BUTTON STYLING */
         .btn-google {
             background: #ffffff;
             color: #1f2937;
@@ -107,10 +106,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             font-weight: 600;
         }
-        .btn-google:hover {
-            background: #f1f5f9;
-            color: #0f172a;
-        }
+        .btn-google:hover { background: #f1f5f9; color: #0f172a; }
         .btn-google svg { width: 18px; height: 18px; }
 
         .divider {
@@ -132,25 +128,82 @@
             background: linear-gradient(135deg, #007dfe 0%, #0056b3 100%);
             color: #fff;
             box-shadow: 0 4px 15px rgba(0, 125, 254, 0.3);
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
         }
+        .btn-pay-now:hover { background: linear-gradient(135deg, #0056b3 0%, #003d80 100%); color: #fff; }
 
-        .btn-pay-now:hover {
-            background: linear-gradient(135deg, #0056b3 0%, #003d80 100%);
+        /* RENEW BUTTON DESIGN (GREEN) */
+        .btn-renew {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: #ffffff;
+            font-weight: 700;
+            padding: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            margin-bottom: 0.8rem;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.35);
+        }
+        .btn-renew:hover {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
             color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5);
         }
 
+        /* DELETE BUTTON DESIGN (RED WITH PULSE) */
+        .btn-delete {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: #ffffff;
+            font-weight: 700;
+            padding: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            margin-bottom: 0.8rem;
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+            animation: pulse-red 2s infinite;
+        }
+        .btn-delete:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(239, 68, 68, 0.6);
+        }
+
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+            70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* CARD DISPLAY DYNAMIC STYLES */
         .card-display {
             background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
             padding: 1.5rem;
             border-radius: 14px;
             margin-bottom: 1.2rem;
             box-shadow: 0 10px 20px rgba(217, 119, 6, 0.25);
+            transition: all 0.4s ease;
+        }
+
+        .card-display.fully-paid {
+            background: linear-gradient(135deg, #15803d 0%, #22c55e 100%);
+            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.25);
         }
 
         .card-header { display: flex; justify-content: space-between; align-items: center; }
         .card-display label { font-size: 0.75rem; text-transform: uppercase; opacity: 0.9; color: #fff; font-weight: 600; }
         .card-display .balance { font-size: 2.2rem; font-weight: 700; margin-top: 0.3rem; color: #fff; }
+
+        .paid-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.25);
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
 
         .history-title {
             font-size: 0.95rem;
@@ -179,7 +232,6 @@
         .toggle-text span { color: var(--accent); font-weight: 600; }
         .toggle-text span:hover { text-decoration: underline; }
 
-        /* MODAL STYLING FOR PAYMENT */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -218,7 +270,6 @@
         .payment-box .name { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
         .payment-box .methods { font-size: 0.7rem; color: #f59e0b; font-weight: 600; margin-top: 0.4rem; }
 
-        /* GRID LAYOUT FOR ALL PAYMENT APPS */
         .app-links-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -237,16 +288,12 @@
 
         .btn-gcash { background: #007dfe; }
         .btn-gcash:hover { background: #0056b3; }
-
         .btn-maya { background: #10b981; }
         .btn-maya:hover { background: #059669; }
-
         .btn-gotyme { background: #6366f1; }
         .btn-gotyme:hover { background: #4f46e5; }
-
         .btn-maribank { background: #ef4444; }
         .btn-maribank:hover { background: #dc2626; }
-
         .btn-atome { background: #ec4899; grid-column: span 2; }
         .btn-atome:hover { background: #db2777; }
 
@@ -324,15 +371,22 @@
 
     <!-- MAIN DASHBOARD SCREEN -->
     <div class="container hidden" id="appBox">
-        <div class="card-display">
+        <div class="card-display" id="cardDisplay">
             <div class="card-header">
                 <label id="userDisplay">Total Utang</label>
+                <span class="paid-badge hidden" id="paidBadge">Fully Paid</span>
             </div>
             <div class="balance" id="displayBalance">₱0.00</div>
         </div>
 
-        <!-- PAY NOW BUTTON -->
-        <button class="btn btn-pay-now" onclick="openPaymentModal()">💳 Pay Now</button>
+        <!-- PAY NOW BUTTON (IPAKITA PAG MAY UTANG) -->
+        <button class="btn btn-pay-now" id="payBtn" onclick="openPaymentModal()">💳 Pay Now</button>
+        
+        <!-- RENEW BUTTON (GREEN) -->
+        <button class="btn btn-renew hidden" id="renewBtn" onclick="openRenewModal()">🔄 Renew / Mag-Utang Ulit</button>
+
+        <!-- DELETE ACCOUNT BUTTON (RED) -->
+        <button class="btn btn-delete hidden" id="deleteBtn" onclick="confirmDeleteAccount()">🗑️ Burahin ang Account</button>
 
         <!-- TRANSACTION HISTORY SECTION -->
         <div class="history-title">Transaction History</div>
@@ -349,16 +403,12 @@
 
             <div class="payment-box">
                 <h3>PAYMENT DETAILS</h3>
-                
-                <!-- PALITAN ANG SRC NG DIRECT LINK NG QRPH CODE MO -->
                 <img src="https://i.postimg.cc/BvLpwdpb/Screenshot-20260816-165153-com-facebook-orca-Main-Activity.jpg" style="width:100%; max-width:180px; margin: 0.5rem 0; border-radius:8px;">
-                
                 <div class="number">0993 027 0853</div>
                 <div class="name">Account Name: JA**A M** A.</div>
                 <div class="methods">Accepted: GCash / Maya / GoTyme / MariBank / Atome / QRPH</div>
             </div>
 
-            <!-- DIRECT APP BUTTONS FOR ALL 5 PAYMENT METHODS -->
             <label style="margin-bottom: 0.5rem;">Buksan ang Payment App:</label>
             <div class="app-links-grid">
                 <a href="gcash://" class="btn btn-app btn-gcash">🔵 Open GCash</a>
@@ -380,6 +430,29 @@
 
             <button class="btn" style="background: var(--success); color:#fff;" onclick="submitPayment()">I-submit ang Bayad</button>
             <button class="btn btn-cancel" onclick="closePaymentModal()">I-cancel</button>
+        </div>
+    </div>
+
+    <!-- RENEW / NEW UTANG MODAL -->
+    <div class="modal-overlay hidden" id="renewModal">
+        <div class="modal-content">
+            <div class="auth-header">
+                <h2>Renew / Utang Ulit</h2>
+                <p>Maglagay ng bagong halaga ng utang</p>
+            </div>
+
+            <div class="form-group">
+                <label>Halaga ng Bagong Utang (₱)</label>
+                <input type="number" id="renewAmount" placeholder="e.g. 1000">
+            </div>
+
+            <div class="form-group">
+                <label>Dahilan / Note (Optional)</label>
+                <input type="text" id="renewNote" placeholder="e.g. Bagong Hiram">
+            </div>
+
+            <button class="btn" style="background: var(--success); color:#fff;" onclick="submitRenew()">I-confirm ang Renew</button>
+            <button class="btn btn-cancel" onclick="closeRenewModal()">I-cancel</button>
         </div>
     </div>
 
@@ -406,7 +479,7 @@
             const toast = document.getElementById('toast');
             toast.innerText = message;
             toast.className = `show ${type}`;
-            setTimeout(() => { toast.className = ''; }, 3000);
+            setTimeout(() => { toast.className = ''; }, 3500);
         }
 
         auth.onAuthStateChanged(user => {
@@ -461,7 +534,6 @@
             }
         }
 
-        /* GOOGLE SIGN IN FUNCTION */
         async function handleGoogleAuth() {
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
@@ -489,6 +561,27 @@
                     const transactions = data.transactions || [];
 
                     document.getElementById('displayBalance').innerText = '₱' + currentBalance.toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+                    const cardDisplay = document.getElementById('cardDisplay');
+                    const paidBadge = document.getElementById('paidBadge');
+                    const deleteBtn = document.getElementById('deleteBtn');
+                    const renewBtn = document.getElementById('renewBtn');
+                    const payBtn = document.getElementById('payBtn');
+
+                    // KAPAG FULLY PAID NA (TRANSACTIONS > 0 AT BALANCE === 0)
+                    if (currentBalance === 0 && transactions.length > 0) {
+                        cardDisplay.classList.add('fully-paid');
+                        paidBadge.classList.remove('hidden');
+                        deleteBtn.classList.remove('hidden'); 
+                        renewBtn.classList.remove('hidden');  
+                        payBtn.classList.add('hidden');       
+                    } else {
+                        cardDisplay.classList.remove('fully-paid');
+                        paidBadge.classList.add('hidden');
+                        deleteBtn.classList.add('hidden');
+                        renewBtn.classList.add('hidden');
+                        payBtn.classList.remove('hidden');
+                    }
 
                     const historyList = document.getElementById('historyList');
                     historyList.innerHTML = '';
@@ -522,6 +615,16 @@
             document.getElementById('payModal').classList.add('hidden');
         }
 
+        function openRenewModal() {
+            document.getElementById('renewAmount').value = '';
+            document.getElementById('renewNote').value = '';
+            document.getElementById('renewModal').classList.remove('hidden');
+        }
+
+        function closeRenewModal() {
+            document.getElementById('renewModal').classList.add('hidden');
+        }
+
         async function submitPayment() {
             const amount = parseFloat(document.getElementById('payAmount').value);
             const refNo = document.getElementById('payRefNo').value.trim();
@@ -547,9 +650,63 @@
                 }, { merge: true });
 
                 closePaymentModal();
-                showNotification('🎉 Na-record na ang bayad mo!', 'success');
+
+                if (newBalance === 0) {
+                    showNotification('🎉 CONGRATS! Fully paid na ang utang mo!', 'success');
+                } else {
+                    showNotification('🎉 Na-record na ang bayad mo!', 'success');
+                }
+
             } catch (err) {
                 showNotification(err.message, 'error');
+            }
+        }
+
+        async function submitRenew() {
+            const amount = parseFloat(document.getElementById('renewAmount').value);
+            const note = document.getElementById('renewNote').value.trim() || 'Bagong Utang / Renew';
+
+            if (isNaN(amount) || amount <= 0) return showNotification('Maglagay ng tamang halaga ng bagong utang.', 'error');
+
+            try {
+                const newBalance = currentBalance + amount;
+                const docRef = db.collection('users').doc(currentUser.uid);
+
+                await docRef.set({
+                    balance: newBalance,
+                    transactions: firebase.firestore.FieldValue.arrayUnion({
+                        desc: note,
+                        amount: amount,
+                        type: 'utang'
+                    })
+                }, { merge: true });
+
+                closeRenewModal();
+                showNotification('🔄 Matagumpay na na-renew ang utang!', 'success');
+
+            } catch (err) {
+                showNotification(err.message, 'error');
+            }
+        }
+
+        async function confirmDeleteAccount() {
+            const confirmAction = confirm("Sigurado ka bang gusto mong burahin ang iyong account? Hindi na ito mababawi.");
+            if (!confirmAction) return;
+
+            try {
+                const uid = currentUser.uid;
+                
+                await db.collection('users').doc(uid).delete();
+                await currentUser.delete();
+
+                showNotification('🗑️ Matagumpay na nabura ang iyong account.', 'success');
+            } catch (err) {
+                if (err.code === 'auth/requires-recent-login') {
+                    showNotification('Kailangan mong mag-login muli bago burahin ang account.', 'error');
+                    auth.signOut();
+                } else {
+                    showNotification(err.message, 'error');
+                }
             }
         }
     </script>
