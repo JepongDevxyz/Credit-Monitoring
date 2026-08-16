@@ -215,15 +215,27 @@
         }
 
         .history-list { list-style: none; max-height: 220px; overflow-y: auto; }
+        
+        /* INAYOS NA TRANSACTION HISTORY ITEMS LAYOUT */
         .history-item {
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            gap: 12px;
             background: rgba(15, 23, 42, 0.5);
             padding: 0.8rem 1rem;
             border-radius: 8px;
             margin-bottom: 0.5rem;
             font-size: 0.88rem;
             border: 1px solid var(--border);
+        }
+        .history-item span:first-child {
+            word-break: break-word;
+        }
+        .history-item .amount {
+            white-space: nowrap;
+            flex-shrink: 0;
+            text-align: right;
         }
         .history-item.utang .amount { color: var(--danger); font-weight: 700; }
         .history-item.bayad .amount { color: var(--success); font-weight: 700; }
@@ -354,7 +366,7 @@
         
         <div class="form-group">
             <label>Email Address</label>
-            <input type="email" id="authEmail" placeholder="juan@gmail.com" autocomplete="off">
+            <input type="email" id="authEmail" placeholder="jepongdev@gmail.com" autocomplete="off">
         </div>
 
         <div class="form-group">
